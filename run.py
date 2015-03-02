@@ -5,6 +5,7 @@ import pynotify
 import urllib
 import json
 import sys
+import os
 import webbrowser
 
 import gobject
@@ -204,6 +205,12 @@ class Indicator():
     gtk.main()
 
   def quit(self, item):
+    try:
+      os.remove("/tmp/ubuntu-twitch-indicator.png")
+      os.remove("/tmp/stream-icon.png")
+    except OSError:
+      pass
+
     gtk.main_quit()
 
 if __name__=="__main__":
