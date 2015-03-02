@@ -19,12 +19,12 @@ class Twitch:
 
   def push_notifications(self, streams):
     for stream in streams:
-      urllib.urlretrieve(stream["image"], "/tmp/twitcher.png")
+      urllib.urlretrieve(stream["image"], "/tmp/stream-icon.png")
 
       pynotify.init("image")
       self.n = pynotify.Notification("%s just went LIVE!" % stream["name"],
         stream["status"],
-        "/tmp/twitcher.png",
+        "/tmp/stream-icon.png",
       )
       
       self.n.show()
@@ -109,6 +109,8 @@ class Indicator():
       appindicator.CATEGORY_APPLICATION_STATUS
     )
     self.a.set_status(appindicator.STATUS_ACTIVE)
+
+    self.currentLiveStreams = []
 
     self.menu = gtk.Menu()
     self.streamsMenu = gtk.Menu()
