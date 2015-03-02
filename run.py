@@ -5,6 +5,7 @@ import pynotify
 import urllib
 import json
 import sys
+import webbrowser
 
 import gobject
 import gtk
@@ -123,6 +124,8 @@ class Indicator():
       gtk.MenuItem('Quit')
     ]
 
+    self.menuStreamsItems = []
+
     for i in self.menuItems:
       self.menu.append(i)
 
@@ -143,6 +146,9 @@ class Indicator():
 
     for i in self.menu.get_children():
       i.show()
+
+  def open_link(self, widget, url):
+    webbrowser.open_new_tab(url)
 
   def refresh_streams_init(self, widget):
     threading.Thread(target=self.refresh_streams, args=(widget)).start()
@@ -174,8 +180,11 @@ class Indicator():
     for i in self.streamsMenu.get_children():
       self.streamsMenu.remove(i)
 
-    for stream in self.liveStreams:
-      self.streamsMenu.append(gtk.MenuItem(stream["name"]))
+    self.menuStreamsItems = []
+    for index, stream in enumerate(self.liveStreams):
+      self.menuStreamsItems.append(gtk.MenuItem(stream["name"]))
+      self.menuStreamsItems[index].connect('activate', self.open_link, stream["url"])
+      self.streamsMenu.append(self.menuStreamsItems[index])
 
     for i in self.streamsMenu.get_children():
       i.show()
