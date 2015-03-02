@@ -99,9 +99,13 @@ class Twitch:
 
 class Indicator():
   def __init__(self):
+    self.imgData = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wMCBjI5dO0WygAAAfBJREFUWMPtl79Lm0EYxz+XvDpIFCzaQrN0KFy9QsGLg4PQoSB06SYBR3EQOjgWV+nQv6H/QEEKxaComyJOkoTW9q1voVgHu5mAkzSv77m84vuai9YkrxnMM91977l7fj88B13qMIlGB55bygFnCcisSqUPLzaOjWPfLY0BuwkZ/QmYvtikGrhlLlyaBBSIvenUW19OgXl1qUswIdXYTqtSPbe0DLy5iqfqrTc54EkEybTJcmu4bSF4e5dVkLpNZSRBTgsxXQAeAWtS6Y0IPgWMA1tS6UJiCgAzwFPgBNi4THEzKRCzoScLzYSATudAV4H7pUArVfAS6BXCVONNRLwD3ofVEaWztioglf7bAK8AlXjPKD4AtK3ROUm72HN3+0HsAY9D6OOd5YDnFgch/TUifE4qvXlbD/xr0vIMiD/AQAi9lkqvN5EDYsVzS34E6AdeSKW///pRzBohtoEhy/DSF3l/1ib8fz3QZyvf39/KPb4IysDwNXcDIC+V/tzuPvDQd8wBiOEb+K4V3sgDx8AR4F/BByPxXAV6I2eHFsMWbxJuHT68n8UeEOk6roAPwHz9iCnypIMvmPgdOaJPm+qEciRXA2qWAcS33J+Xz0eXwnUt6VYs4rO1yT9TuaXEfkYWD2TDEQzgVCrtdj+W7aBzywV9ymJvZJkAAAAASUVORK5CYII="
+    self.fh = open("/tmp/ubuntu-twitch-indicator.png", "wb")
+    self.fh.write(self.imgData.decode('base64'))
+    self.fh.close()
     self.a = appindicator.Indicator(
       'wallch_indicator',
-      '/home/rbrs/Documents/twitch-icon.png',
+      '/tmp/ubuntu-twitch-indicator.png',
       appindicator.CATEGORY_APPLICATION_STATUS
     )
     self.a.set_status(appindicator.STATUS_ACTIVE)
