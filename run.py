@@ -80,11 +80,12 @@ class Twitch:
       self.data = json.loads(self.f.read())
       self.liveStreams = []
       for stream in self.data['streams']:
-        # For some reason sometimes status is not defined on twitch
+        # For some reason sometimes stream status and game is not present in
+        # twitch API.
         try:
           self.status = stream['channel']['status']
-        except RuntimeError:
-          self.status = "Playing now %s" % stream['channel']['game']
+        except KeyError:
+          self.status = ""
         
         st = {
           'name': stream['channel']['display_name'],
