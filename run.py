@@ -20,13 +20,20 @@ class Twitch:
 
   def push_notifications(self, streams):
     for stream in streams:
-      urllib.urlretrieve(stream["image"], "/tmp/stream-icon.png")
+
+      self.image = gtk.Image()
+      self.response = urllib.urlopen(stream["image"])
+      self.loader = gtk.gdk.PixbufLoader()
+      self.loader.write(self.response.read())
+      self.loader.close()
 
       pynotify.init("image")
       self.n = pynotify.Notification("%s just went LIVE!" % stream["name"],
         stream["status"],
-        "/tmp/stream-icon.png",
+        "",
       )
+
+      self.n.set_icon_from_pixbuf(self.loader.get_pixbuf())
       
       self.n.show()
 
@@ -208,7 +215,6 @@ class Indicator():
   def quit(self, item):
     try:
       os.remove("/tmp/ubuntu-twitch-indicator.png")
-      os.remove("/tmp/stream-icon.png")
     except OSError:
       pass
 
