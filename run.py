@@ -177,9 +177,21 @@ class Indicator():
       (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
        gtk.STOCK_OK, gtk.RESPONSE_ACCEPT)
     )
-    self.label = gtk.Label("settings here")
-    self.dialog.vbox.pack_start(self.label)
-    self.label.show()
+
+    self.box = gtk.HBox(False, 0)
+
+    self.label_username = gtk.Label("Twitch username")
+    self.input_username = gtk.Entry()
+
+    self.box.pack_start(self.label_username, True, True, 5)
+    self.box.pack_start(self.input_username, True, True, 5)
+    
+    self.dialog.vbox.pack_start(self.box)
+    
+    self.box.show()
+    self.label_username.show()
+    self.input_username.show()
+
     self.dialog.run()
     self.dialog.destroy()
 
