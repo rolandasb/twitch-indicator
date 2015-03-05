@@ -150,6 +150,7 @@ class Indicator():
       i.show()
 
     self.menuItems[0].connect('activate', self.refresh_streams_init)
+    self.menuItems[-2].connect('activate', self.settings_dialog)
     self.menuItems[-1].connect('activate', self.quit)
 
   def rebuild_menu(self):
@@ -167,6 +168,20 @@ class Indicator():
 
   def refresh_streams_init(self, widget):
     threading.Thread(target=self.refresh_streams, args=(widget)).start()
+
+  def settings_dialog(self, widget):
+    self.dialog = gtk.Dialog(
+      "Settings",
+      None,
+      gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+      (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+       gtk.STOCK_OK, gtk.RESPONSE_ACCEPT)
+    )
+    self.label = gtk.Label("settings here")
+    self.dialog.vbox.pack_start(self.label)
+    self.label.show()
+    self.dialog.run()
+    self.dialog.destroy()
 
   def refresh_streams(self, items):
     """Refreshes live streams.
