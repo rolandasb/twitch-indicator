@@ -108,12 +108,14 @@ class Twitch:
 
 class Indicator():
   def __init__(self):
+    # Setup applet icon depending on DE 
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
     if self.desktop_env == "pantheon":
       self.applet_icon = "indicator_elementary.png"
     else:
       self.applet_icon = "indicator_ubuntu.png"
 
+    # Create applet
     self.a = appindicator.Indicator(
       'wallch_indicator',
       os.path.dirname(os.path.abspath(__file__)) + "/icons/%s" % self.applet_icon,
