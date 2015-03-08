@@ -19,23 +19,27 @@ class Twitch:
     self.twitchUsername = "xrbrs" # Your twitch username
 
   def push_notifications(self, streams):
-    for stream in streams:
+    try:
+      for stream in streams:
 
-      self.image = gtk.Image()
-      self.response = urllib.urlopen(stream["image"])
-      self.loader = gtk.gdk.PixbufLoader()
-      self.loader.write(self.response.read())
-      self.loader.close()
+        self.image = gtk.Image()
+        self.response = urllib.urlopen(stream["image"])
+        self.loader = gtk.gdk.PixbufLoader()
+        self.loader.write(self.response.read())
+        self.loader.close()
 
-      pynotify.init("image")
-      self.n = pynotify.Notification("%s just went LIVE!" % stream["name"],
-        stream["status"],
-        "",
-      )
+        pynotify.init("image")
+        self.n = pynotify.Notification("%s just went LIVE!" % stream["name"],
+          stream["status"],
+          "",
+        )
 
-      self.n.set_icon_from_pixbuf(self.loader.get_pixbuf())
-      
-      self.n.show()
+        self.n.set_icon_from_pixbuf(self.loader.get_pixbuf())
+        
+        self.n.show()
+    except IOError:
+      return None
+
 
   def fetch_followed_channels(self, username):
     """Fetches user followed channels from Twitch.
@@ -55,7 +59,7 @@ class Twitch:
       for channel in self.data['follows']:
         self.followedChannels.append(channel['channel']['display_name'])
       return self.followedChannels
-    except RuntimeError:
+    except IOError:
       return None
 
   def fetch_live_streams(self, channels):
@@ -103,7 +107,7 @@ class Twitch:
 
         self.liveStreams.append(st)
       return self.liveStreams
-    except RuntimeError:
+    except IOError:
       return None
 
 class Indicator():
@@ -216,7 +220,15 @@ class Indicator():
 
     self.tw = Twitch()
     self.followedChannels = self.tw.fetch_followed_channels("xrbrs")
-    self.liveStreams = self.tw.fetch_live_streams(self.followedChannels)
+
+    if self.followedChannels != None:
+      self.liveStreams = self.tw.fetch_live_streams(self.followedChannels)
+    else:
+      self.menuItems[0].set_sensitive(True)
+      self.menuItems[0].set_label("Check now")
+      self.menuItems[2].set_label("Cannot retrieve channels")
+      self.rebuild_menu()
+      return False
 
     # Push notifications of new streams
     self.tw.push_notifications(self.liveStreams)
