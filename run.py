@@ -154,31 +154,28 @@ class Indicator():
        gtk.STOCK_OK, gtk.RESPONSE_ACCEPT)
     )
 
-    self.box = gtk.HBox(False, 0)
-    self.box2 = gtk.HBox(False, 0)
+    self.table = gtk.Table(2, 2, False)
+    # self.table.set_row_spacings(5)
+    # self.table.set_col_spacings(20)
 
-    self.label_username = gtk.Label("Twitch username")
-    self.input_username = gtk.Entry()
+    self.username_label = gtk.Label("Twitch username")
+    self.username_input = gtk.Entry()
 
-    self.label_notifications = gtk.Label("Enable notifications")
-    self.checkbox_notifications = gtk.CheckButton()
+    self.notifications_label = gtk.Label("Enable notifications")
+    self.notifications_checkbox = gtk.CheckButton()
 
-    self.box.pack_start(self.label_username, True, True, 5)
-    self.box.pack_start(self.input_username, True, True, 5)
+    self.table.attach(self.username_label, 0, 1, 0, 1, gtk.FILL, gtk.FILL, 6, 2)
+    self.table.attach(self.username_input, 1, 2, 0, 1, gtk.FILL, gtk.FILL, 6, 2)
+    self.table.attach(self.notifications_label, 0, 1, 1, 2, gtk.FILL, gtk.FILL, 6, 2)
+    self.table.attach(self.notifications_checkbox, 1, 2, 1, 2, gtk.FILL, gtk.FILL, 6, 2)
 
-    self.box2.pack_start(self.label_notifications, True, True, 5)
-    self.box2.pack_start(self.checkbox_notifications, True, True, 5)
-    
-    self.dialog.vbox.pack_start(self.box)
-    self.dialog.vbox.pack_end(self.box2)
+    self.dialog.vbox.pack_start(self.table)
 
-    self.box.show()
-    self.box2.show()
-    self.label_username.show()
-    self.input_username.show()
-    self.label_notifications.show()
-    self.label_notifications.set_justify(gtk.JUSTIFY_LEFT)
-    self.checkbox_notifications.show()
+    self.username_label.show()
+    self.username_input.show()
+    self.notifications_label.show()
+    self.notifications_checkbox.show()
+    self.table.show()
 
     self.dialog.run()
     self.dialog.destroy()
@@ -253,7 +250,6 @@ class Indicator():
     """Pushes notifications of every stream, passed as a list of dictionaries."""
     try:
       for stream in streams:
-
         self.image = gtk.Image()
         self.response = urllib.urlopen(stream["image"])
         self.loader = gtk.gdk.PixbufLoader()
