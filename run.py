@@ -155,8 +155,6 @@ class Indicator():
     )
 
     self.table = gtk.Table(2, 2, False)
-    # self.table.set_row_spacings(5)
-    # self.table.set_col_spacings(20)
 
     self.username_label = gtk.Label("Twitch username")
     self.username_input = gtk.Entry()
