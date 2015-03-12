@@ -70,6 +70,8 @@ class Twitch:
       return None
 
 class Indicator():
+  SETTINGS_KEY = "apps.twitch-indicator-applet"
+
   def __init__(self):
     # Setup applet icon depending on DE
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
@@ -85,6 +87,9 @@ class Indicator():
       appindicator.IndicatorCategory.APPLICATION_STATUS
     )
     self.a.set_status(appindicator.IndicatorStatus.ACTIVE)
+
+    # Load settings
+    self.settings = Gio.Settings.new(self.SETTINGS_KEY)
 
     # Setup menu
     self.menu = gtk.Menu()
@@ -152,9 +157,11 @@ class Indicator():
 
     self.username_label = gtk.Label("Twitch username")
     self.username_input = gtk.Entry()
+    self.username_input.set_text(self.settings.get_string("twitch-username"))
 
     self.notifications_label = gtk.Label("Enable notifications")
     self.notifications_checkbox = gtk.Switch()
+    self.notifications_checkbox.set_active(self.settings.get_boolean("enable-notifications"))
 
     self.table.attach(self.username_label, 0, 1, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
     self.table.attach(self.username_input, 1, 2, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
@@ -172,7 +179,14 @@ class Indicator():
 
     self.box = self.dialog.get_content_area()
     self.box.add(self.table)
-    self.dialog.run()
+    self.response = self.dialog.run()
+
+    if self.response == gtk.ResponseType.OK:
+      self.settings.set_string("twitch-username", self.username_input.get_text())
+      self.settings.set_boolean("enable-notifications", self.notifications_checkbox.get_active())
+    elif self.response == gtk.ResponseType.CANCEL:
+      pass
+
     self.dialog.destroy()
 
   def refresh_streams(self, items):
