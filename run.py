@@ -1,17 +1,14 @@
 #!/usr/bin/python
 
-import appindicator
-import pynotify
+from gi.repository import Gtk as gtk
+from gi.repository import Gio, GObject, Notify, GdkPixbuf, Gdk
+from gi.repository import AppIndicator3 as appindicator
+import os
+
 import urllib
 import json
 import sys
-import os
 import webbrowser
-
-import gobject
-import gtk
-gtk.gdk.threads_init()
-
 import threading
 
 class Twitch:
@@ -68,7 +65,7 @@ class Twitch:
           }
 
           self.live_streams.append(st)
-      return self.live_streams
+        return self.live_streams
     except IOError:
       return None
 
@@ -82,12 +79,12 @@ class Indicator():
       self.applet_icon = "indicator_ubuntu.png"
 
     # Create applet
-    self.a = appindicator.Indicator(
+    self.a = appindicator.Indicator.new(
       'wallch_indicator',
       os.path.dirname(os.path.abspath(__file__)) + "/icons/%s" % self.applet_icon,
-      appindicator.CATEGORY_APPLICATION_STATUS
+      appindicator.IndicatorCategory.APPLICATION_STATUS
     )
-    self.a.set_status(appindicator.STATUS_ACTIVE)
+    self.a.set_status(appindicator.IndicatorStatus.ACTIVE)
 
     # Setup menu
     self.menu = gtk.Menu()
@@ -98,20 +95,16 @@ class Indicator():
       gtk.MenuItem('Quit')
     ]
 
-    for i in self.menuItems:
-      self.menu.append(i)
-
-    self.a.set_menu(self.menu)
-
-    for i in self.menu.get_children():
-      i.show()
-
     self.menuItems[0].connect('activate', self.refresh_streams_init)
     self.menuItems[-2].connect('activate', self.settings_dialog)
     self.menuItems[-1].connect('activate', self.quit)
     
-    # Runtime variables
-    self.currentLiveStreams = []
+    for i in self.menuItems:
+      self.menu.append(i)
+
+    self.a.set_menu(self.menu)
+    
+    self.menu.show_all()
 
   def rebuild_menu(self):
     self.menuItems = [
@@ -133,8 +126,7 @@ class Indicator():
     for i in self.menuItems:
       self.menu.append(i)
 
-    for i in self.menu.get_children():
-      i.show()
+    self.menu.show_all()
 
   def open_link(self, widget, url):
     """Opens link in a default browser."""
@@ -142,16 +134,18 @@ class Indicator():
 
   def refresh_streams_init(self, widget):
     """Initializes thread for stream refreshing."""
-    threading.Thread(target=self.refresh_streams, args=(widget)).start()
+    self.t = threading.Thread(target=self.refresh_streams, args=(widget))
+    self.t.daemon = True
+    self.t.start()
 
   def settings_dialog(self, widget):
     """Shows applet settings dialog."""
     self.dialog = gtk.Dialog(
       "Settings",
       None,
-      gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-      (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
-       gtk.STOCK_OK, gtk.RESPONSE_ACCEPT)
+      0,
+      (gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL,
+       gtk.STOCK_OK, gtk.ResponseType.OK)
     )
 
     self.table = gtk.Table(2, 2, False)
@@ -160,14 +154,15 @@ class Indicator():
     self.username_input = gtk.Entry()
 
     self.notifications_label = gtk.Label("Enable notifications")
-    self.notifications_checkbox = gtk.CheckButton()
+    self.notifications_checkbox = gtk.Switch()
 
-    self.table.attach(self.username_label, 0, 1, 0, 1, gtk.FILL, gtk.FILL, 6, 2)
-    self.table.attach(self.username_input, 1, 2, 0, 1, gtk.FILL, gtk.FILL, 6, 2)
-    self.table.attach(self.notifications_label, 0, 1, 1, 2, gtk.FILL, gtk.FILL, 6, 2)
-    self.table.attach(self.notifications_checkbox, 1, 2, 1, 2, gtk.FILL, gtk.FILL, 6, 2)
+    self.table.attach(self.username_label, 0, 1, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
+    self.table.attach(self.username_input, 1, 2, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
+    self.table.attach(self.notifications_label, 0, 1, 1, 2, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
+    self.table.attach(self.notifications_checkbox, 1, 2, 1, 2, gtk.AttachOptions.EXPAND, gtk.AttachOptions.FILL, 6, 4)
 
-    self.dialog.vbox.pack_start(self.table)
+    self.grid = gtk.Grid.new()
+    self.grid.attach(self.table, 0, 0, 0, 0)
 
     self.username_label.show()
     self.username_input.show()
@@ -175,6 +170,8 @@ class Indicator():
     self.notifications_checkbox.show()
     self.table.show()
 
+    self.box = self.dialog.get_content_area()
+    self.box.add(self.table)
     self.dialog.run()
     self.dialog.destroy()
 
@@ -236,13 +233,13 @@ class Indicator():
     for i in self.streams_menu.get_children():
       i.show()
     
-    # Push notifications of new streams
-    self.push_notifications(self.live_streams)
-
     # Re-enable "Check now" button
     self.menuItems[0].set_sensitive(True)
     self.menuItems[0].set_label("Check now")
     self.refresh_menu()
+
+    # Push notifications of new streams
+    self.push_notifications(self.live_streams)
 
   def push_notifications(self, streams):
     """Pushes notifications of every stream, passed as a list of dictionaries."""
@@ -250,21 +247,20 @@ class Indicator():
       for stream in streams:
         self.image = gtk.Image()
         self.response = urllib.urlopen(stream["image"])
-        self.loader = gtk.gdk.PixbufLoader()
+        self.loader = GdkPixbuf.PixbufLoader.new()
         self.loader.write(self.response.read())
         self.loader.close()
 
-        pynotify.init("image")
-        self.n = pynotify.Notification("%s just went LIVE!" % stream["name"],
+        Notify.init("image")
+        self.n = Notify.Notification.new("%s just went LIVE!" % stream["name"],
           stream["status"],
           "",
         )
 
         self.n.set_icon_from_pixbuf(self.loader.get_pixbuf())
-        
         self.n.show()
     except IOError:
-      return None
+      return
 
   def main(self):
     """Main indicator function."""
@@ -275,7 +271,6 @@ class Indicator():
     gtk.main_quit()
 
 if __name__=="__main__":
+  Gdk.threads_init()
   gui = Indicator()
-  gtk.gdk.threads_enter()
   gui.main()
-  gtk.gdk.threads_leave()
