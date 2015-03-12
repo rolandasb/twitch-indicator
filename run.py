@@ -201,7 +201,7 @@ class Indicator():
 
     # Create twitch instance and fetch followed channels.
     self.tw = Twitch()
-    self.followed_channels = self.tw.fetch_followed_channels("xrbrs")
+    self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
 
     # If we can't retrieve channels, update menu accordingly.
     if self.followed_channels == None:
@@ -253,7 +253,8 @@ class Indicator():
     self.refresh_menu()
 
     # Push notifications of new streams
-    self.push_notifications(self.live_streams)
+    if (self.settings.get_boolean("enable-notifications")):
+      self.push_notifications(self.live_streams)
 
   def push_notifications(self, streams):
     """Pushes notifications of every stream, passed as a list of dictionaries."""
