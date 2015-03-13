@@ -76,17 +76,19 @@ class Indicator():
     # Setup applet icon depending on DE
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
     if self.desktop_env == "pantheon":
-      self.applet_icon = "indicator_elementary.png"
+      self.applet_icon = "indicator_elementary"
     else:
-      self.applet_icon = "indicator_ubuntu.png"
+      self.applet_icon = "indicator_ubuntu"
 
     # Create applet
     self.a = appindicator.Indicator.new(
+      'Twitch indicator applet',
       'wallch_indicator',
-      os.path.dirname(os.path.abspath(__file__)) + "/icons/%s" % self.applet_icon,
       appindicator.IndicatorCategory.APPLICATION_STATUS
     )
     self.a.set_status(appindicator.IndicatorStatus.ACTIVE)
+    self.a.set_icon_theme_path("/usr/lib/twitch-indicator-applet/")
+    self.a.set_icon(self.applet_icon)
 
     # Load settings
     self.settings = Gio.Settings.new(self.SETTINGS_KEY)
