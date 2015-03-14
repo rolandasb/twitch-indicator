@@ -113,20 +113,20 @@ class Indicator():
     
     self.menu.show_all()
 
-  def rebuild_menu(self):
-    self.menuItems = [
-      gtk.MenuItem('Check now'),
-      gtk.SeparatorMenuItem(),
-      gtk.MenuItem('Settings'),
-      gtk.MenuItem('Quit')
-    ]
-
-    self.menuItems[0].connect('activate', self.refresh_streams_init)
-    self.menuItems[-2].connect('activate', self.settings_dialog)
-    self.menuItems[-1].connect('activate', self.quit)
-
-  def refresh_menu(self):
+  def refresh_menu(self, rebuild=False):
     """Rebuilds indicator menu."""
+    if(rebuild):
+      self.menuItems = [
+        gtk.MenuItem('Check now'),
+        gtk.SeparatorMenuItem(),
+        gtk.MenuItem('Settings'),
+        gtk.MenuItem('Quit')
+      ]
+
+      self.menuItems[0].connect('activate', self.refresh_streams_init)
+      self.menuItems[-2].connect('activate', self.settings_dialog)
+      self.menuItems[-1].connect('activate', self.quit)
+      
     for i in self.menu.get_children():
       self.menu.remove(i)
 
@@ -193,8 +193,7 @@ class Indicator():
 
   def refresh_streams(self, items):
     """Refreshes live streams list. Also pushes notifications when needed."""
-    self.rebuild_menu()
-    self.refresh_menu()
+    self.refresh_menu(True)
 
     # Disable check now button in menu and update text.
     self.menuItems[0].set_sensitive(False)
