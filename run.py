@@ -71,6 +71,7 @@ class Twitch:
 
 class Indicator():
   SETTINGS_KEY = "apps.twitch-indicator-applet"
+  LIVE_STREAMS = []
 
   def __init__(self):
     # Setup applet icon depending on DE
@@ -253,9 +254,13 @@ class Indicator():
     # Re-enable "Check now" button
     GLib.idle_add(self.enable_menu)
 
+    # Update global livestreams list and create list of new streams (for notifications)
+    self.LIVE_STREAMS = self.live_streams
+    self.notify_list = [x for x in self.live_streams if x not in self.LIVE_STREAMS]
+
     # Push notifications of new streams
     if (self.settings.get_boolean("enable-notifications")):
-      self.push_notifications(self.live_streams)
+      self.push_notifications(self.notify_list)
 
   def abort_refresh(self):
     """Updates menu with failure state message."""
