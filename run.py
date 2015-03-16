@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from gi.repository import Gtk as gtk
-from gi.repository import Gio, GObject, Notify, GdkPixbuf, Gdk
+from gi.repository import GLib, Gio, GObject, Notify, GdkPixbuf, Gdk
 from gi.repository import AppIndicator3 as appindicator
 import os
 
@@ -191,71 +191,81 @@ class Indicator():
 
     self.dialog.destroy()
 
-  def refresh_streams(self, items):
-    """Refreshes live streams list. Also pushes notifications when needed."""
-    self.refresh_menu(True)
+  def disable_menu(self):
+    """Disables check now button."""
+    self.menu.get_children()[0].set_sensitive(False)
+    self.menu.get_children()[0].set_label("Checking...")
 
-    # Disable check now button in menu and update text.
-    self.menuItems[0].set_sensitive(False)
-    self.menuItems[0].set_label("Checking...")
-    self.refresh_menu()
+  def enable_menu(self):
+    """Enables check now button."""
+    self.menu.get_children()[0].set_sensitive(True)
+    self.menu.get_children()[0].set_label("Check now")
 
-    # Create twitch instance and fetch followed channels.
-    self.tw = Twitch()
-    self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
+  def add_streams_menu(self, streams):
+    """Adds streams list to menu."""
+    # Remove live streams menu if already exists
+    if (len(self.menuItems) > 4):
+      self.menuItems.pop(2)
+      self.menuItems.pop(1)
 
-    # If we can't retrieve channels, update menu accordingly.
-    if self.followed_channels == None:
-      self.menuItems.insert(2, gtk.MenuItem("Cannot retrieve channels"))
-      self.menuItems.insert(3, gtk.SeparatorMenuItem())
-      self.menuItems[2].set_sensitive(False)
-
-      # Re-enable "Check now" button
-      self.menuItems[0].set_sensitive(True)
-      self.menuItems[0].set_label("Check now")
-      self.refresh_menu()
-
-      # Stop further execution.
-      return
-
-    # Fetch live streams
-    self.live_streams = self.tw.fetch_live_streams(self.followed_channels)
-
-    # If we can't retrieve streams, update menu accordingly.
-    if self.live_streams == None:
-      self.menuItems.insert(2, gtk.MenuItem("Cannot retrieve live streams"))
-      self.menuItems.insert(3, gtk.SeparatorMenuItem())
-      self.menuItems[2].set_sensitive(False)
-
-      # Re-enable "Check now" button
-      self.menuItems[0].set_sensitive(True)
-      self.menuItems[0].set_label("Check now")
-      self.refresh_menu()
-
-      # Stop further execution.
-      return
-
-    # Update menu with live streams
+    # Create menu
     self.streams_menu = gtk.Menu() 
-    self.menuItems.insert(2, gtk.MenuItem("Live channels ({0})".format(len(self.live_streams))))
+    self.menuItems.insert(2, gtk.MenuItem("Live channels ({0})".format(len(streams))))
     self.menuItems.insert(3, gtk.SeparatorMenuItem())
     self.menuItems[2].set_submenu(self.streams_menu)
 
-    for index, stream in enumerate(self.live_streams):
+    for index, stream in enumerate(streams):
       self.streams_menu.append(gtk.MenuItem(stream["name"]))
       self.streams_menu.get_children()[index].connect('activate', self.open_link, stream["url"])
     
     for i in self.streams_menu.get_children():
       i.show()
+
+    # Refresh all menu by removing and re-adding menu items
+    for i in self.menu.get_children():
+      self.menu.remove(i)
+
+    for i in self.menuItems:
+      self.menu.append(i)
+
+    self.menu.show_all()
+
+  def refresh_streams(self, items):
+    """Refreshes live streams list. Also pushes notifications when needed."""
+    GLib.idle_add(self.disable_menu)
+
+    # Create twitch instance and fetch followed channels.
+    self.tw = Twitch()
+
+    self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
+    if self.followed_channels == None:
+      abort_refresh()
+      return
+
+    self.live_streams = self.tw.fetch_live_streams(self.followed_channels)
+    if self.live_streams == None:
+      abort_refresh()
+      return
+
+    # Update menu with live streams
+    GLib.idle_add(self.add_streams_menu, self.live_streams)
     
     # Re-enable "Check now" button
-    self.menuItems[0].set_sensitive(True)
-    self.menuItems[0].set_label("Check now")
-    self.refresh_menu()
+    GLib.idle_add(self.enable_menu)
 
     # Push notifications of new streams
     if (self.settings.get_boolean("enable-notifications")):
       self.push_notifications(self.live_streams)
+
+  def abort_refresh(self):
+    """Updates menu with failure state message."""
+    self.menuItems.insert(2, gtk.MenuItem("Cannot retrieve live streams"))
+    self.menuItems.insert(3, gtk.SeparatorMenuItem())
+    self.menuItems[2].set_sensitive(False)
+
+    # Re-enable "Check now" button
+    self.menuItems[0].set_sensitive(True)
+    self.menuItems[0].set_label("Check now")
 
   def push_notifications(self, streams):
     """Pushes notifications of every stream, passed as a list of dictionaries."""
