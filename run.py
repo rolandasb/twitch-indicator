@@ -114,28 +114,6 @@ class Indicator():
     
     self.menu.show_all()
 
-  def refresh_menu(self, rebuild=False):
-    """Rebuilds indicator menu."""
-    if(rebuild):
-      self.menuItems = [
-        gtk.MenuItem('Check now'),
-        gtk.SeparatorMenuItem(),
-        gtk.MenuItem('Settings'),
-        gtk.MenuItem('Quit')
-      ]
-
-      self.menuItems[0].connect('activate', self.refresh_streams_init)
-      self.menuItems[-2].connect('activate', self.settings_dialog)
-      self.menuItems[-1].connect('activate', self.quit)
-      
-    for i in self.menu.get_children():
-      self.menu.remove(i)
-
-    for i in self.menuItems:
-      self.menu.append(i)
-
-    self.menu.show_all()
-
   def open_link(self, widget, url):
     """Opens link in a default browser."""
     webbrowser.open_new_tab(url)
@@ -255,8 +233,8 @@ class Indicator():
     GLib.idle_add(self.enable_menu)
 
     # Update global livestreams list and create list of new streams (for notifications)
-    self.LIVE_STREAMS = self.live_streams
     self.notify_list = [x for x in self.live_streams if x not in self.LIVE_STREAMS]
+    self.LIVE_STREAMS = self.live_streams
 
     # Push notifications of new streams
     if (self.settings.get_boolean("enable-notifications")):
