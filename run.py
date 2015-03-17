@@ -4,6 +4,7 @@ from gi.repository import Gtk as gtk
 from gi.repository import GLib, Gio, GObject, Notify, GdkPixbuf, Gdk
 from gi.repository import AppIndicator3 as appindicator
 import os
+import time
 
 import urllib
 import json
@@ -74,6 +75,8 @@ class Indicator():
   LIVE_STREAMS = []
 
   def __init__(self):
+    self.timeout_thread = None
+
     # Setup applet icon depending on DE
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
     if self.desktop_env == "pantheon":
@@ -103,7 +106,7 @@ class Indicator():
       gtk.MenuItem('Quit')
     ]
 
-    self.menuItems[0].connect('activate', self.refresh_streams_init)
+    self.menuItems[0].connect('activate', self.refresh_streams_init, [True])
     self.menuItems[-2].connect('activate', self.settings_dialog)
     self.menuItems[-1].connect('activate', self.quit)
     
@@ -114,15 +117,21 @@ class Indicator():
     
     self.menu.show_all()
 
+    self.refresh_streams_init(None)
+
   def open_link(self, widget, url):
     """Opens link in a default browser."""
     webbrowser.open_new_tab(url)
 
-  def refresh_streams_init(self, widget):
+  def refresh_streams_init(self, widget, button_activate=False):
     """Initializes thread for stream refreshing."""
-    self.t = threading.Thread(target=self.refresh_streams, args=(widget))
+    self.t = threading.Thread(target=self.refresh_streams)
     self.t.daemon = True
     self.t.start()
+
+    if (button_activate is False):
+      self.timeout_thread = threading.Timer(360, self.refresh_streams_init, [None])
+      self.timeout_thread.start()
 
   def settings_dialog(self, widget):
     """Shows applet settings dialog."""
@@ -209,7 +218,7 @@ class Indicator():
 
     self.menu.show_all()
 
-  def refresh_streams(self, items):
+  def refresh_streams(self):
     """Refreshes live streams list. Also pushes notifications when needed."""
     GLib.idle_add(self.disable_menu)
 
@@ -277,6 +286,7 @@ class Indicator():
 
   def quit(self, item):
     """Quits the applet."""
+    self.timeout_thread.cancel()
     gtk.main_quit()
 
 if __name__=="__main__":
