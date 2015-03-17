@@ -71,7 +71,7 @@ class Twitch:
       return None
 
 class Indicator():
-  SETTINGS_KEY = "apps.twitch-indicator-applet"
+  SETTINGS_KEY = "apps.twitch-indicator"
   LIVE_STREAMS = []
 
   def __init__(self):
@@ -86,12 +86,12 @@ class Indicator():
 
     # Create applet
     self.a = appindicator.Indicator.new(
-      'Twitch indicator applet',
+      'Twitch indicator',
       'wallch_indicator',
       appindicator.IndicatorCategory.APPLICATION_STATUS
     )
     self.a.set_status(appindicator.IndicatorStatus.ACTIVE)
-    self.a.set_icon_theme_path("/usr/lib/twitch-indicator-applet/")
+    self.a.set_icon_theme_path("/usr/lib/twitch-indicator/")
     self.a.set_icon(self.applet_icon)
 
     # Load settings

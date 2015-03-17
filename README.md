@@ -1,4 +1,4 @@
-# twitch-indicator-applet
+# Twitch Indicator
 
 ![](http://i.imgur.com/zWfcJuJ.png)
 
