@@ -241,8 +241,18 @@ class Indicator():
     # Re-enable "Check now" button
     GLib.idle_add(self.enable_menu)
 
-    # Update global livestreams list and create list of new streams (for notifications)
-    self.notify_list = [x for x in self.live_streams if x not in self.LIVE_STREAMS]
+    # Check which streams were not live before, create separate list for
+    # notifications and update main livestreams list.
+    # We check live streams by URL, because sometimes Twitch API does not show
+    # stream status, which makes notifications appear even if stream has been
+    # live before.
+    self.notify_list = list(self.live_streams)
+    for x in self.LIVE_STREAMS:
+      for y in self.live_streams:
+        if x["url"] == y["url"]:
+          self.notify_list[:] = [d for d in self.notify_list if d.get('url') != y["url"]]
+          break
+    
     self.LIVE_STREAMS = self.live_streams
 
     # Push notifications of new streams
