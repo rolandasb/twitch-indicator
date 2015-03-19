@@ -145,18 +145,18 @@ class Indicator():
 
     self.table = gtk.Table(2, 2, False)
 
-    self.username_label = gtk.Label("Twitch username")
+    self.username_label = gtk.Label("Twitch username:", xalign=1)
     self.username_input = gtk.Entry()
     self.username_input.set_text(self.settings.get_string("twitch-username"))
 
-    self.notifications_label = gtk.Label("Enable notifications")
+    self.notifications_label = gtk.Label("Enable notifications:", xalign=1)
     self.notifications_checkbox = gtk.Switch()
     self.notifications_checkbox.set_active(self.settings.get_boolean("enable-notifications"))
 
-    self.table.attach(self.username_label, 0, 1, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
-    self.table.attach(self.username_input, 1, 2, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
-    self.table.attach(self.notifications_label, 0, 1, 1, 2, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 6, 4)
-    self.table.attach(self.notifications_checkbox, 1, 2, 1, 2, gtk.AttachOptions.EXPAND, gtk.AttachOptions.FILL, 6, 4)
+    self.table.attach(self.username_label, 0, 1, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 10, 4)
+    self.table.attach(self.username_input, 1, 2, 0, 1, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 10, 4)
+    self.table.attach(self.notifications_label, 0, 1, 1, 2, gtk.AttachOptions.FILL, gtk.AttachOptions.FILL, 10, 6)
+    self.table.attach(self.notifications_checkbox, 1, 2, 1, 2, gtk.AttachOptions.EXPAND, gtk.AttachOptions.FILL, 10, 6)
 
     self.grid = gtk.Grid.new()
     self.grid.attach(self.table, 0, 0, 0, 0)
