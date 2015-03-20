@@ -12,5 +12,11 @@
       <summary>Enable live stream notifications</summary>
       <description>When followed channel goes live, will show a notification.</description>
     </key>
+
+    <key type="i" name="refresh-interval">
+      <default>5</default>
+      <summary>Refresh interval.</summary>
+      <description>How many minutes should indicator wait between refreshing your followed channels.</description>
+    </key>
   </schema>
 </schemalist>
