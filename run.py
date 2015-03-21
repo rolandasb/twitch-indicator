@@ -144,7 +144,7 @@ class Indicator():
     )
 
     self.builder = gtk.Builder()
-    self.builder.add_from_file("twitch-indicator.glade")
+    self.builder.add_from_file("/usr/lib/twitch-indicator/twitch-indicator.glade")
 
     self.builder.get_object("twitch_username").set_text(self.settings.get_string("twitch-username"))
     self.builder.get_object("show_notifications").set_active(self.settings.get_boolean("enable-notifications"))

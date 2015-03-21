@@ -11,5 +11,6 @@ else
 
   mkdir -p /usr/lib/twitch-indicator
   cp icons/*.png /usr/lib/twitch-indicator/
+  cp twitch-indicator.glade /usr/lib/twitch-indicator/
   chmod a+r /usr/lib/twitch-indicator/*.png
 fi
