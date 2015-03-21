@@ -211,11 +211,12 @@ class Indicator():
 
     self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
     if self.followed_channels == None:
-      GLib.idle_add(self.abort_refresh)
+      GLib.idle_add(self.abort_refresh, "Cannot retrieve channel list from Twitch.tv", "Retrying in {0} minutes...".format(self.settings.get_int("refresh-interval")))
       return
+    
     self.live_streams = self.tw.fetch_live_streams(self.followed_channels)
     if self.live_streams == None:
-      GLib.idle_add(self.abort_refresh)
+      GLib.idle_add(self.abort_refresh, "Cannot retrieve live streams from Twitch.tv", "Retrying in {0} minutes...".format(self.settings.get_int("refresh-interval")))
       return
 
     # Update menu with live streams
@@ -242,14 +243,14 @@ class Indicator():
     if (self.settings.get_boolean("enable-notifications")):
       self.push_notifications(self.notify_list)
 
-  def abort_refresh(self):
+  def abort_refresh(self, message, description):
     """Updates menu with failure state message."""
     # Remove previous message if already exists
     if (len(self.menuItems) > 4):
       self.menuItems.pop(2)
       self.menuItems.pop(1)
 
-    self.menuItems.insert(2, gtk.MenuItem("Cannot retrieve live streams"))
+    self.menuItems.insert(2, gtk.MenuItem(message))
     self.menuItems.insert(3, gtk.SeparatorMenuItem())
     self.menuItems[2].set_sensitive(False)
 
@@ -265,6 +266,13 @@ class Indicator():
       self.menu.append(i)
 
     self.menu.show_all()
+
+    # Push notification
+    Notify.init("image")
+    self.n = Notify.Notification.new(message,
+      description,
+      "error"
+    ).show()
 
   def push_notifications(self, streams):
     """Pushes notifications of every stream, passed as a list of dictionaries."""
