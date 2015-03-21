@@ -206,6 +206,10 @@ class Indicator():
     """Refreshes live streams list. Also pushes notifications when needed."""
     GLib.idle_add(self.disable_menu)
 
+    if (self.settings.get_string("twitch-username") == ""):
+      GLib.idle_add(self.abort_refresh, "Twitch.tv username is not set", "Setup your username in settings")
+      return
+
     # Create twitch instance and fetch followed channels.
     self.tw = Twitch()
 
