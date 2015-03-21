@@ -211,12 +211,11 @@ class Indicator():
 
     self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
     if self.followed_channels == None:
-      abort_refresh()
+      GLib.idle_add(self.abort_refresh)
       return
-
     self.live_streams = self.tw.fetch_live_streams(self.followed_channels)
     if self.live_streams == None:
-      abort_refresh()
+      GLib.idle_add(self.abort_refresh)
       return
 
     # Update menu with live streams
@@ -245,6 +244,11 @@ class Indicator():
 
   def abort_refresh(self):
     """Updates menu with failure state message."""
+    # Remove previous message if already exists
+    if (len(self.menuItems) > 4):
+      self.menuItems.pop(2)
+      self.menuItems.pop(1)
+
     self.menuItems.insert(2, gtk.MenuItem("Cannot retrieve live streams"))
     self.menuItems.insert(3, gtk.SeparatorMenuItem())
     self.menuItems[2].set_sensitive(False)
@@ -252,6 +256,15 @@ class Indicator():
     # Re-enable "Check now" button
     self.menuItems[0].set_sensitive(True)
     self.menuItems[0].set_label("Check now")
+
+    # Refresh all menu items 
+    for i in self.menu.get_children():
+      self.menu.remove(i)
+
+    for i in self.menuItems:
+      self.menu.append(i)
+
+    self.menu.show_all()
 
   def push_notifications(self, streams):
     """Pushes notifications of every stream, passed as a list of dictionaries."""
