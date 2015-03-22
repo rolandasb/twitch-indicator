@@ -21,6 +21,13 @@ class Twitch:
       self.f = urllib.urlopen("https://api.twitch.tv/kraken/users/{0}/follows/channels?direction=DESC&limit=100&offset=0&sortby=created_at".format(username))
       self.data = json.loads(self.f.read())
 
+      # Return 404 if user does not exist
+      try:
+        if (self.data["status"] == 404):
+          return 404
+      except KeyError:
+        pass
+
       self.pages = (self.data['_total'] - 1) / 100
       for page in range(0, self.pages + 1):
         if page != 0:
@@ -212,8 +219,13 @@ class Indicator():
 
     # Create twitch instance and fetch followed channels.
     self.tw = Twitch()
-
     self.followed_channels = self.tw.fetch_followed_channels(self.settings.get_string("twitch-username"))
+
+    # Does user exist?
+    if self.followed_channels == 404:
+      GLib.idle_add(self.abort_refresh, "Cannot retrieve followed channels from Twitch.tv", "User does not exist.")
+      return
+
     if self.followed_channels == None:
       GLib.idle_add(self.abort_refresh, "Cannot retrieve channel list from Twitch.tv", "Retrying in {0} minutes...".format(self.settings.get_int("refresh-interval")))
       return
