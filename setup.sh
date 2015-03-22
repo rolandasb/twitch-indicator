@@ -6,6 +6,7 @@ if [[ $EUID -ne 0 ]]; then
 else
   rm -f /usr/bin/twitch-indicator
   cp apps.twitch-indicator.gschema.xml /usr/share/glib-2.0/schemas
+  glib-compile-schemas /usr/share/glib-2.0/schemas
   cp run.py /usr/bin/twitch-indicator
   chmod a+x /usr/bin/twitch-indicator
 
