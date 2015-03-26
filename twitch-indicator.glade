@@ -9,123 +9,99 @@
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkBox" id="box1">
+  <object class="GtkGrid" id="grid1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_left">15</property>
     <property name="margin_right">15</property>
     <property name="margin_top">10</property>
     <property name="margin_bottom">10</property>
-    <property name="orientation">vertical</property>
-    <property name="spacing">10</property>
+    <property name="row_spacing">10</property>
+    <property name="column_spacing">6</property>
     <child>
-      <object class="GtkGrid" id="grid1">
+      <object class="GtkLabel" id="label5">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="column_spacing">10</property>
-        <child>
-          <object class="GtkLabel" id="label1">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_text" translatable="yes">Your twitch.tv username.</property>
-            <property name="margin_left">7</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">Twitch username:</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkEntry" id="twitch_username">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
+        <property name="tooltip_text" translatable="yes">Your twitch.tv username.</property>
+        <property name="halign">end</property>
+        <property name="margin_right">2</property>
+        <property name="label" translatable="yes">Twitch username:</property>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
       </packing>
     </child>
     <child>
-      <object class="GtkGrid" id="grid2">
+      <object class="GtkLabel" id="label6">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="column_spacing">10</property>
-        <child>
-          <object class="GtkLabel" id="label2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_text" translatable="yes">Shows notifications when your followed channels go live.</property>
-            <property name="label" translatable="yes">Show notifications:</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSwitch" id="show_notifications">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
+        <property name="tooltip_text" translatable="yes">Shows notifications when your followed channels go live.</property>
+        <property name="halign">end</property>
+        <property name="margin_right">2</property>
+        <property name="label" translatable="yes">Show notifications:</property>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="left_attach">0</property>
+        <property name="top_attach">1</property>
       </packing>
     </child>
     <child>
-      <object class="GtkGrid" id="grid3">
+      <object class="GtkLabel" id="label7">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="column_spacing">10</property>
-        <child>
-          <object class="GtkLabel" id="label3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_text" translatable="yes">How many minutes should indicator wait between refreshing your followed channels.</property>
-            <property name="margin_left">16</property>
-            <property name="label" translatable="yes">Refresh interval:</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label4">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">0</property>
-            <property name="label" translatable="yes">min.</property>
-            <property name="ellipsize">start</property>
-          </object>
-          <packing>
-            <property name="left_attach">2</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
+        <property name="tooltip_text" translatable="yes">How many minutes should indicator wait between refreshing your followed channels.</property>
+        <property name="halign">end</property>
+        <property name="margin_right">2</property>
+        <property name="label" translatable="yes">Refresh interval:</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkEntry" id="twitch_username">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSwitch" id="show_notifications">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="halign">start</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkGrid" id="grid6">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkSpinButton" id="refresh_interval">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="progress_pulse_step">1</property>
             <property name="adjustment">adjustment1</property>
-            <property name="climb_rate">1</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label8">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">5</property>
+            <property name="label" translatable="yes">min.</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -134,9 +110,8 @@
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
+        <property name="left_attach">1</property>
+        <property name="top_attach">2</property>
       </packing>
     </child>
   </object>

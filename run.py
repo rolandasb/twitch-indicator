@@ -158,7 +158,7 @@ class Indicator():
     self.builder.get_object("refresh_interval").set_value(self.settings.get_int("refresh-interval"))
 
     self.box = self.dialog.get_content_area()
-    self.box.add(self.builder.get_object("box1"))
+    self.box.add(self.builder.get_object("grid1"))
     self.response = self.dialog.run()
 
     if self.response == gtk.ResponseType.OK:
