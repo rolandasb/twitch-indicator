@@ -193,7 +193,10 @@ class Indicator():
     self.menuItems.insert(3, gtk.SeparatorMenuItem())
     self.menuItems[2].set_submenu(self.streams_menu)
 
-    for index, stream in enumerate(streams):
+    # Order streams by alphabetical order
+    self.streams_ordered = sorted(streams, key=lambda k: k["name"].lower())
+    
+    for index, stream in enumerate(self.streams_ordered):
       self.streams_menu.append(gtk.MenuItem(stream["name"]))
       self.streams_menu.get_children()[index].connect('activate', self.open_link, stream["url"])
     
