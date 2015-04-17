@@ -298,7 +298,11 @@ class Indicator():
     try:
       for stream in streams:
         self.image = gtk.Image()
-        self.response = urllib.urlopen(stream["image"])
+        # Show default if channel owner has not set his avatar
+        if (stream["image"] == None):
+          self.response = urllib.urlopen("http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png")
+        else:
+          self.response = urllib.urlopen(stream["image"])
         self.loader = GdkPixbuf.PixbufLoader.new()
         self.loader.write(self.response.read())
         self.loader.close()
