@@ -87,14 +87,14 @@ class Indicator():
     # Setup applet icon depending on DE
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
     if self.desktop_env == "pantheon":
-      self.applet_icon = "indicator_elementary"
+      self.applet_icon = "twitch-elementary"
     else:
-      self.applet_icon = "indicator_ubuntu"
+      self.applet_icon = "twitch-ubuntu"
 
     # Create applet
     self.a = appindicator.Indicator.new(
       'Twitch indicator',
-      'wallch_indicator',
+      'indicator-messages',
       appindicator.IndicatorCategory.APPLICATION_STATUS
     )
     self.a.set_status(appindicator.IndicatorStatus.ACTIVE)
