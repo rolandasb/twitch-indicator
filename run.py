@@ -88,6 +88,8 @@ class Indicator():
     self.desktop_env = os.environ.get('DESKTOP_SESSION')
     if self.desktop_env == "pantheon":
       self.applet_icon = "twitch-elementary"
+    elif self.desktop_env == "mate":
+      self.applet_icon = "twitch-mate"
     else:
       self.applet_icon = "twitch-ubuntu"
 
