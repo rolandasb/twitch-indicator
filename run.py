@@ -18,7 +18,7 @@ class Twitch:
     try:
       self.followed_channels = []
       
-      self.f = urllib.urlopen("https://api.twitch.tv/kraken/users/{0}/follows/channels?direction=DESC&limit=100&offset=0&sortby=created_at".format(username))
+      self.f = urllib.urlopen("https://api.twitch.tv/kraken/users/{0}/follows/channels?client_id=oe77z9pq798tln7ngil0exwr0mun4hj&direction=DESC&limit=100&offset=0&sortby=created_at".format(username))
       self.data = json.loads(self.f.read())
 
       # Return 404 if user does not exist
@@ -31,7 +31,7 @@ class Twitch:
       self.pages = (self.data['_total'] - 1) / 100
       for page in range(0, self.pages + 1):
         if page != 0:
-          self.f = urllib.urlopen("https://api.twitch.tv/kraken/users/{0}/follows/channels?direction=DESC&limit=100&offset={1}&sortby=created_at".format(username, (page * 100)))
+          self.f = urllib.urlopen("https://api.twitch.tv/kraken/users/{0}/follows/channels?client_id=oe77z9pq798tln7ngil0exwr0mun4hj&direction=DESC&limit=100&offset={1}&sortby=created_at".format(username, (page * 100)))
           self.data = json.loads(self.f.read())
 
         for channel in self.data['follows']:
@@ -54,7 +54,7 @@ class Twitch:
           self.offset = self.channels_count 
         self.channels_offset = channels[(page * 75):self.offset]
 
-        self.f = urllib.urlopen("https://api.twitch.tv/kraken/streams?channel={0}".format(','.join(self.channels_offset)))
+        self.f = urllib.urlopen("https://api.twitch.tv/kraken/streams?client_id=oe77z9pq798tln7ngil0exwr0mun4hj&channel={0}".format(','.join(self.channels_offset)))
         self.data = json.loads(self.f.read())
 
         for stream in self.data['streams']:
