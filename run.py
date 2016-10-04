@@ -73,7 +73,7 @@ class Twitch:
           }
 
           self.live_streams.append(st)
-        return self.live_streams
+      return self.live_streams
     except IOError:
       return None
 
