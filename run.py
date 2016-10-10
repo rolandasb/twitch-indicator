@@ -35,7 +35,7 @@ class Twitch:
           self.data = json.loads(self.f.read())
 
         for channel in self.data['follows']:
-          self.followed_channels.append(channel['channel']['display_name'])
+          self.followed_channels.append(channel['channel']['name'])
       
       return self.followed_channels
     except IOError:
